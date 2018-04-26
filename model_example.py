@@ -3,13 +3,13 @@ import cv2
 import numpy
 
 
-od_predictor = object_detection.FastObjectDetector()
+od_predictor = object_detection.TinyYOLODetector()
 
 cap = cv2.VideoCapture(1)
 
 while(cap.isOpened()):
     ret, frame = cap.read()
-    print(od_predictor.predict(frame))
+    print(od_predictor.predict(image=[frame]))
     if cv2.waitKey(1) & 0xFF == ord('q'):
        break
 

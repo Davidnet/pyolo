@@ -1,20 +1,25 @@
 """
 File that contains the class for initialazing the fast object detector
 """
-
+import sys, os
 import numpy as np
 import pyyolo
 import cv2
 
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
-class FastObjectDetector(object):
-    def __init__(self, ):
-        darknet_path = './darknet'
-        datacfg = 'cfg/coco.data'
-        cfgfile = 'cfg/tiny-yolo.cfg'
-        weightfile = '../tiny-yolo.weights'
-        self.thresh = 0.24
-        self.hier_thresh = 0.5
+class TinyYOLODetector(object):
+    def __init__(self, thresh=0.24, hier_thresh=0.5):
+        #darknet_path = './darknet'
+        darknet_path = os.path.join(DIR_PATH, "darknet")
+        #datacfg = 'cfg/coco.data'
+        datacfg = os.path.join(darknet_path, "cfg", "coco.data")
+        #cfgfile = 'cfg/tiny-yolo.cfg'
+        cfgfile = os.path.join(darknet_path, "cfg", "tiny-yolo.cfg")
+        #weightfile = '../tiny-yolo.weights'
+        weightfile = os.path.join(DIR_PATH, "tiny-yolo.weights")
+        self.thresh = thresh
+        self.hier_thresh = hier_thresh
         pyyolo.init(darknet_path, datacfg, cfgfile, weightfile)
 
     def _parser_raw_output(self, raw_output):
@@ -30,7 +35,7 @@ class FastObjectDetector(object):
                     prob=preds
                    )
 
-    def predict(self, img_np):
+    def _single_predict(self, img_np):
         """Prediction function"""
         img_np = img_np.transpose(2, 0, 1)
         c, h, w = img_np.shape
@@ -39,6 +44,9 @@ class FastObjectDetector(object):
         raw_outputs = pyyolo.detect(w, h, c, data, self.thresh, self.hier_thresh)
         return list(map(self._parser_raw_output, raw_outputs))
 
+    def predict(self, image):
+        """ Batch Prediction """
+        return list(map(self._single_predict, image))[0] 
 
     def __del__(self):
         pyyolo.cleanup()
