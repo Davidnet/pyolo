@@ -33,11 +33,11 @@ class FastObjectDetector(object):
     def predict(self, img_np):
         """Prediction function"""
         img_np = img_np.transpose(2, 0, 1)
-        c, h, w = img.shape
+        c, h, w = img_np.shape
         data = img_np.ravel()/255.0
         data = np.ascontiguousarray(data, dtype=np.float32)
         raw_outputs = pyyolo.detect(w, h, c, data, self.thresh, self.hier_thresh)
-        return list(map(_parser_raw_output, raw_outputs))
+        return list(map(self._parser_raw_output, raw_outputs))
 
 
     def __del__(self):

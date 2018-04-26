@@ -103,7 +103,6 @@ detection_info **yolo_detect(yolo_handle handle, image im, float thresh, float h
 	clock_t time;
 	time=clock();
 	network_predict(obj->net, X);
-	printf("Cam frame predicted in %f seconds.\n", sec(clock()-time));
 
 	layer l = obj->net.layers[obj->net.n-1];
 	get_region_boxes(l, im.w, im.h, obj->net.w, obj->net.h, thresh, obj->probs, obj->boxes, NULL, 0, 0, hier_thresh, 1);
@@ -137,7 +136,6 @@ detection_info **yolo_test(yolo_handle handle, char *filename, float thresh, flo
 	network_predict(obj->net, X);
 	*feature_map = obj->net.output;
 	*map_size = obj->net.outputs;
-	printf("%s: Predicted in %f seconds.\n", input, sec(clock()-time));
 
 	layer l = obj->net.layers[obj->net.n-1];
 	get_region_boxes(l, im.w, im.h, obj->net.w, obj->net.h, thresh, obj->probs, obj->boxes, NULL, 0, 0, hier_thresh, 1);
