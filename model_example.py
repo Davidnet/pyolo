@@ -3,7 +3,7 @@ import cv2
 import numpy
 
 
-od_predictor = object_detection.TinyYOLODetector()
+od_predictor = object_detection.TinyYOLODetector.get(rm=True)
 
 cap = cv2.VideoCapture(1)
 

@@ -69,8 +69,8 @@ class YOLODetector(object):
         Function to calculate distance
         """
         ymin, xmin, ymax, xmax = box
-        mid_x = (xmax + xmin) / 2
-        mid_y = (ymax + ymin) / 2  # TODO: use mid_y
+        mid_x = (xmax + xmin) / (2*self.w)
+        mid_y = (ymax + ymin) / (2*self.h)  # TODO: use mid_y
         apx_distance = round((1 - (xmax - xmin)) ** 4, 1)
         return apx_distance
 
@@ -93,10 +93,10 @@ class YOLODetector(object):
     def _single_predict(self, img_np):
         """Prediction function"""
         img_np = img_np.transpose(2, 0, 1)
-        c, h, w = img_np.shape
+        self.c, self.h, self.w = img_np.shape
         data = img_np.ravel()/255.0
         data = np.ascontiguousarray(data, dtype=np.float32)
-        raw_outputs = pyyolo.detect(w, h, c, data, self.thresh, self.hier_thresh)
+        raw_outputs = pyyolo.detect(self.w, self.h, self.c, data, self.thresh, self.hier_thresh)
         return list(map(self._parser_raw_output, raw_outputs))
 
     def predict(self, image):
