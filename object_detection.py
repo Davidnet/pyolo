@@ -6,49 +6,13 @@ import sys, os, shutil, subprocess
 import numpy as np
 import pyyolo
 import cv2
+import tfinterface as ti
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 URL_PATH = "gs://vision-198622-production-models/object-detection/tiny-yolo/tiny-yolo.weights"
 
-class TinyYOLODetector(object):
-    """Class detection for TinyYolo"""
-    @staticmethod
-    def get(url=URL_PATH, *args, **kwargs):
-        rm = kwargs.pop("rm", False)
 
-        hash_name = str(hash(url)).replace("-", "0")
-        filename = os.path.basename(url)
-
-        home_path = os.path.expanduser('~')
-        model_dir_base = os.path.join(home_path, ".local", "tfinterface", "frozen_graphs", hash_name)
-        model_path = os.path.join(model_dir_base, filename)
-
-        if os.path.exists(model_dir_base):
-
-            is_empty = len(os.listdir(model_dir_base)) == 0
-            files_counts = [ os.path.join(dp, f) for dp, _, filenames in os.walk(model_dir_base) for f in filenames if f.endswith(".gstmp") ]
-            temp_files = len(files_counts) > 0
-
-            if rm or is_empty or temp_files:
-                shutil.rmtree(model_dir_base, ignore_errors = True)
-
-        if not os.path.exists(model_dir_base):
-            os.makedirs(model_dir_base)
-
-            cmd = "gsutil -m cp -R {source_folder} {dest_folder}".format(
-                source_folder = url,
-                dest_folder = model_dir_base,
-            )
-
-            # print("CMD: {}".format(cmd))
-
-            subprocess.check_call(
-                cmd,
-                stdout = subprocess.PIPE, shell = True,
-            )
-        return YOLODetector(model_path, *args, **kwargs)
-
-class YOLODetector(object):
+class YOLODetector(ti.estimator.getters.FileGetter):
     """Class detection for YOLO objects in general"""
     def __init__(self, weightfile, thresh=0.24, hier_thresh=0.5, *args, **kwargs):
         #darknet_path = './darknet'
@@ -99,9 +63,12 @@ class YOLODetector(object):
         raw_outputs = pyyolo.detect(self.w, self.h, self.c, data, self.thresh, self.hier_thresh)
         return list(map(self._parser_raw_output, raw_outputs))
 
-    def predict(self, image):
+    def predict(self, image=None):
         """ Batch Prediction """
-        return list(map(self._single_predict, image))[0] 
+        if image is None:
+            raise ValueError("Keyword argument image was not found")
+        else:
+            return list(map(self._single_predict, image))[0]
 
     def __del__(self):
         pyyolo.cleanup()
