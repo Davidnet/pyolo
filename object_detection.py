@@ -46,7 +46,7 @@ class TinyYOLODetector(object):
                 cmd,
                 stdout = subprocess.PIPE, shell = True,
             )
-    return YOLODetector(weightfile, *args, **kwargs)
+        return YOLODetector(model_path, *args, **kwargs)
 
 class YOLODetector(object):
     """Class detection for YOLO objects in general"""
@@ -64,6 +64,16 @@ class YOLODetector(object):
 
 
 
+    def _distance_approximator(self, box):
+        """
+        Function to calculate distance
+        """
+        ymin, xmin, ymax, xmax = box
+        mid_x = (xmax + xmin) / 2
+        mid_y = (ymax + ymin) / 2  # TODO: use mid_y
+        apx_distance = round((1 - (xmax - xmin)) ** 4, 1)
+        return apx_distance
+
     def _parser_raw_output(self, raw_output):
         """
         Convert YOLO predictions into visual tools conventions
@@ -71,7 +81,10 @@ class YOLODetector(object):
         keys = ["top", "left", "bottom", "right"]
         preds = raw_output.get("prob")
         id_class = raw_output.get("class")
-        return dict(box=list(map(raw_output.get, keys)),
+        box = list(map(raw_output.get, keys))
+        distance = self._distance_approximator(box)
+        return dict(box=box,
+                    distance=distance,
                     id=len(id_class),
                     name=id_class,
                     prob=preds
