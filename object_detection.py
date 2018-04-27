@@ -50,7 +50,7 @@ class TinyYOLODetector(object):
 
 class YOLODetector(object):
     """Class detection for YOLO objects in general"""
-    def __init__(self, weightfile, thresh=0.24, hier_thresh=0.5):
+    def __init__(self, weightfile, thresh=0.24, hier_thresh=0.5, *args, **kwargs):
         #darknet_path = './darknet'
         darknet_path = os.path.join(DIR_PATH, "darknet")
         #datacfg = 'cfg/coco.data'
