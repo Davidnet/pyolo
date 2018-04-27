@@ -12,7 +12,7 @@ DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 URL_PATH = "gs://vision-198622-production-models/object-detection/tiny-yolo/tiny-yolo.weights"
 
 
-class YOLODetector(ti.estimator.getters.FileGetter):
+class TinyYOLODetector(ti.estimator.getters.FileGetter):
     """Class detection for YOLO objects in general"""
     def __init__(self, weightfile, thresh=0.24, hier_thresh=0.5, *args, **kwargs):
         #darknet_path = './darknet'

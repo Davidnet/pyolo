@@ -2,9 +2,10 @@ import object_detection
 import cv2
 import numpy
 
+URL_PATH = "gs://vision-198622-production-models/object-detection/tiny-yolo/tiny-yolo.weights"
 
-#od_predictor = object_detection.TinyYOLODetector.get(rm=True)
-od_predictor = object_detection.YOLODetector.get(rm=True)
+
+od_predictor = object_detection.TinyYOLODetector.get(url=URL_PATH, rm=True)
 
 cap = cv2.VideoCapture(1)
 
