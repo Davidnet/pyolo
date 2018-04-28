@@ -35,7 +35,7 @@ class TinyYOLODetector(ti.estimator.getters.FileGetter):
         ymin, xmin, ymax, xmax = box
 #         mid_x = (xmax + xmin) / (2*self.w)
 #         mid_y = (ymax + ymin) / (2*self.h)  # TODO: use mid_y
-        apx_distance = round((1 - ((xmax - xmin/ self.w))) ** 4, 1)
+        apx_distance = round((1 - (((xmax - xmin)/ self.w))) ** 4, 1)
         return apx_distance
 
     def _parser_raw_output(self, raw_output):
